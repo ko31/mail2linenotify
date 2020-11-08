@@ -1,0 +1,13 @@
+{
+  "name": "ko31/mail2linenotify",
+  "description": "mail2linenotify",
+  "authors": [
+    {
+      "name": "Ko Takagi",
+      "email": "takagi@go-sign.info"
+    }
+  ],
+  "require": {
+    "zbateson/mail-mime-parser": "^1.3"
+  }
+}
