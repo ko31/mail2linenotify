@@ -17,3 +17,5 @@ if ( /^To: .*sample.*/:h )
 	cc "| /usr/bin/php7.4 /path/to/mail2linenotify/mail2linenotify.php [Your LINE Access Token]"
 }
 ```
+
+You can also set up the above from the XSERVER ServerPanel.
