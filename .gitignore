@@ -3,6 +3,7 @@
 Thumbs.db
 *.swo
 *.swp
+.idea
 
 # composer packages
 vendor/
