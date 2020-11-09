@@ -1,29 +1,68 @@
 <?php
-require("vendor/autoload.php");
+require( "vendor/autoload.php" );
 
 use ZBateson\MailMimeParser\Message;
 
-// Check parameters.
-if (empty($argv[1])) {
-    exit('Invalid parameter.');
+class MailToLineNotify {
+    const ENDPOINT_URL = 'https://notify-api.line.me/api/notify';
+
+    private $access_token;
+
+    public function __construct( $access_token ) {
+        $this->access_token = $access_token;
+        $this->run();
+    }
+
+    public function run() {
+        $content = $this->parseMailContent();
+        if ( empty( $content ) ) {
+            return;
+        }
+        $this->notify( $content );
+    }
+
+    public function getStdin() {
+        return file_get_contents( "php://stdin" );
+    }
+
+    public function parseMailContent() {
+        $stdin = $this->getStdin();
+        if ( empty( $stdin ) ) {
+            return '';
+        }
+        $message = Message::from( $stdin );
+        if ( empty( $message ) ) {
+            return '';
+        }
+
+        return $message->getTextContent();
+    }
+
+    public function notify( $message ) {
+        $headers   = [
+            'Authorization: Bearer ' . $this->access_token,
+        ];
+        $post_data = [
+            'message' => $message,
+        ];
+        $ch        = curl_init( self::ENDPOINT_URL );
+        curl_setopt( $ch, CURLOPT_POST, true );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $post_data ) );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
+        $result = curl_exec( $ch );
+        curl_close( $ch );
+
+        return $result;
+    }
 }
-$access_token = $argv[1];
 
-$stdin = file_get_contents("php://stdin");
-$message = Message::from($stdin);
+// Check parameters.
+if ( empty( $argv[1] ) ) {
+    exit( 'Invalid parameter.' );
+}
 
-// Send line notify
-$url = 'https://notify-api.line.me/api/notify';
-$headers = [
-    'Authorization: Bearer '.$access_token
-];
-$post_data = [];
-$post_data['message'] = $message->getTextContent();
-$ch = curl_init($url);
-curl_setopt($ch, CURLOPT_POST, true);
-curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post_data));
-curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-$result = curl_exec($ch);
-curl_close($ch);
+// Send message from mail to LINE Nofify.
+$mail2linenotify = new MailToLineNotify( $argv[1] );
 
 echo 'done';
+
