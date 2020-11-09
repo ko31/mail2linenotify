@@ -6,6 +6,7 @@ rm -rf ./.git
 rm -rf ./.github
 rm -rf ./.gitignore
 rm -rf ./bin
+rm -rf ./commit_template
 rm -rf ./composer.lock
 rm -rf ./editorconfig
 rm -rf ./Gruntfile.js
