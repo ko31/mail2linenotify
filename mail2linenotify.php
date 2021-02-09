@@ -26,12 +26,21 @@ class MailToLineNotify {
     private $access_token;
 
     /**
+     * Detect whether to send a forwarded mail.
+     *
+     * @var bool
+     */
+    private $is_send_forwarded_email;
+
+    /**
      * Constructor.
      *
      * @param $access_token
+     * @param $is_send_forwarded_email
      */
-    public function __construct( $access_token ) {
-        $this->access_token = $access_token;
+    public function __construct( $access_token, $is_send_forwarded_email ) {
+        $this->access_token            = $access_token;
+        $this->is_send_forwarded_email = $is_send_forwarded_email;
         $this->run();
     }
 
@@ -69,6 +78,13 @@ class MailToLineNotify {
         $message = Message::from( $stdin );
         if ( empty( $message ) ) {
             return '';
+        }
+
+        // Detect whether to send a forwarded mail.
+        if ( ! $this->is_send_forwarded_email ) {
+            if ( $message->getHeaderValue( HeaderConsts::TO ) !== $message->getHeaderValue( 'Delivered-To' ) ) {
+                return;
+            }
         }
 
         return sprintf( "\n[メール件名]\n%s\n\n[メール本文]\n%s", $message->getHeaderValue( HeaderConsts::SUBJECT ), $message->getTextContent() );
@@ -160,4 +176,5 @@ if ( empty( $argv[1] ) ) {
 }
 
 // Send message from mail to LINE Nofify.
-$mail2linenotify = new MailToLineNotify( $argv[1] );
+$is_send_forwarded_email = ( isset( $argv[2] ) ? (bool) $argv[2] : 0 );
+$mail2linenotify = new MailToLineNotify( $argv[1], $is_send_forwarded_email );
