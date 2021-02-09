@@ -16,6 +16,12 @@ if ( /^To: .*sample.*/:h )
 {
 	cc "| /usr/bin/php7.4 /path/to/mail2linenotify/mail2linenotify.php [Your LINE Access Token]"
 }
+
+# If you want to send forwarded emails as well, you can use the following instead of the above.
+if ( /^To: .*sample.*/:h )
+{
+	cc "| /usr/bin/php7.4 /path/to/mail2linenotify/mail2linenotify.php [Your LINE Access Token] 1"
+}
 ```
 
 You can also set up the above from the XSERVER ServerPanel.
