@@ -19,6 +19,11 @@ class MailToLineNotify {
     const MAX_MESSAGE_LENGTH = 1000;
 
     /**
+     * Return path set in forwarded mail.
+     */
+    const TRANSFERD_RETURN_PATH = 'MAILER-DAEMON';
+
+    /**
      * LINE Notify access token.
      *
      * @var string
@@ -82,7 +87,7 @@ class MailToLineNotify {
 
         // Detect whether to send a forwarded mail.
         if ( ! $this->is_send_forwarded_email ) {
-            if ( $message->getHeaderValue( HeaderConsts::TO ) !== $message->getHeaderValue( 'Delivered-To' ) ) {
+            if ( self::TRANSFERD_RETURN_PATH === $message->getHeaderValue( 'Return-Path' ) ) {
                 return;
             }
         }
